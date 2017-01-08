@@ -80,7 +80,7 @@ static char *copy_component(const char *src, size_t begin, size_t end) {
 /** Returns how many chars to advance if \a uri_text[i] begins a valid \a pchar
  * production. If \a uri_text[i] introduces an invalid \a pchar (such as percent
  * sign not followed by two hex digits), NOT_SET is returned. */
-static size_t parse_pchar(const char *uri_text, size_t i) {
+static size_t parse_pchar(const char *uri_text, const size_t i) {
   /* pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
    * unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
    * pct-encoded = "%" HEXDIG HEXDIG
@@ -92,10 +92,12 @@ static size_t parse_pchar(const char *uri_text, size_t i) {
       (c == '-' || c == '.' || c == '_' || c == '~') || /* unreserved */
       (c == '!' || c == '$' || c == '&' || c == '\'' || c == '$' || c == '&' ||
        c == '(' || c == ')' || c == '*' || c == '+' || c == ',' || c == ';' ||
-       c == '=') /* sub-delims */) {
+       c == '=') /* sub-delims */
+       /* TODO(ol-kl): parse ":" / "@" as pchar */) {
     return 1;
   }
   if (c == '%') { /* pct-encoded */
+    /* TODO(ol-kl): do normalization to upper case */
     size_t j;
     if (uri_text[i + 1] == 0 || uri_text[i + 2] == 0) {
       return NOT_SET;
